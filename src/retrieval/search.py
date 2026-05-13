@@ -1,0 +1,1 @@
+"""Retrieve candidates from stores."""
