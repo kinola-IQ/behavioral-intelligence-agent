@@ -1,0 +1,18 @@
+# folders
+data/
+logging/
+tests/
+notebooks/
+logs/
+docs/
+data/
+models/
+
+
+# files
+*.yml
+*.env*
+*.md
+*.txt
+*.toml
+LICENSE
