@@ -10,12 +10,14 @@ from tenacity import (
 )
 
 
-from src.api.routes import router
+from .routes import router
+from ..core.utils import startup_resources
 
 
 @asynccontextmanager
 async def lifespan(_app: FastAPI):
     """Initialize resources on startup."""
+    await startup_resources()
     yield
 
 

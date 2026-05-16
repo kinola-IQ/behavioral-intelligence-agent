@@ -1,5 +1,5 @@
 """Pydantic request/response models."""
-
+from dataclasses import dataclass
 from pydantic import BaseModel, Field
 from typing import List, Dict
 
@@ -32,4 +32,9 @@ class UserPersona(BaseModel):
     top_concerns: List[str] = Field(...)
     preferred_features: List[str] = Field(...)
     avoid_features: List[str] = Field(...)
-    category_patterns: Dict[str: str] = Field(...)
+    category_patterns: Dict[str, str] = Field(...)
+
+
+@dataclass
+class Context:
+    user_id: str

@@ -16,3 +16,4 @@ models/
 *.txt
 *.toml
 LICENSE
+architecture_explanation.pdf

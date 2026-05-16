@@ -1,8 +1,11 @@
 """Compose prompts from templates and runtime context."""
+import asyncio
+
 from langchain_core.prompts import FewShotPromptTemplate, PromptTemplate
 from langchain.messages import SystemMessage
+from .memory_layer import retrieve_user_persona
 
-
+# review generator
 def prompt_setup():
     """sets up structure, examples and guardrails to inform model behaviour"""
     # prompt to set in role play
@@ -76,7 +79,7 @@ def prompt_setup():
             user_persona: {user_persona}
             user_history: {user_history}
             product_details: {product_details}
-            sentiment_cue: {sentiment_cue}""",
+            sentiment_cue: {sentiment_cue})""",
         input_variables=[
             "user_persona",
             "user_persona",
@@ -88,11 +91,33 @@ def prompt_setup():
     return system_prompt, prompt_template
 
 
-# main prompt
-def chat_prompt():
+# main review prompt
+def review_prompt():
     """sets the structure of the prompt instructing the model"""
 
     # we need to extract the artifacts that sets up the reasoning prompt
     system_prompt, prompt_template = prompt_setup()
 
     return system_prompt + prompt_template
+
+
+# recommendation engine prompt
+def recommender_prompt():
+    """prompt template for recommendation generation"""
+    prompt_template = f"""
+    You are a recommendation generation model.
+
+    Given the input fields below, generate one personalized recommendation that best matches the user.
+
+    Rules:
+    - Be accurate and do not hallucinate missing facts.
+    - Match tone to the sentiment cue.
+    - Base the persona on the following below:
+    {asyncio.wait_for(retrieve_user_persona(), timeout=15)}
+
+    """ + "question: {question}"
+
+    prompt =  prompt_structure = PromptTemplate.from_template(
+        template = prompt
+    )
+    return prompt
