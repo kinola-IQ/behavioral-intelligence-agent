@@ -18,10 +18,15 @@ class Settings(BaseSettings):
     api_port: int = 8000
 
     # Rag Settings
-    embedding_model: str = 'sentence-transformers/all-MiniLM-L6-v2'
-    embedding_function = HuggingFaceEmbeddingFunction(
-        model_name=embedding_model , api_key=os.environ['HUGGINGFACE_API_KEY'])
-    vectordb_name = "review_data"
+    embedding_model: str = "sentence-transformers/all-MiniLM-L6-v2"
+    vectordb_name: str = "review_data"
+
+    @property
+    def embedding_function(self) -> HuggingFaceEmbeddingFunction:
+        return HuggingFaceEmbeddingFunction(
+            model_name=self.embedding_model,
+            api_key=os.environ.get("HUGGINGFACE_API_KEY"),
+        )
 
 
 def get_settings() -> Settings:
