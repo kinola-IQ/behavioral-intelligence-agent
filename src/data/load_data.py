@@ -1,4 +1,7 @@
 """Load raw and external datasets."""
+import json
+import pandas as pd
+
 # Load JSON data
 with open(input_file, "r", encoding="utf-8") as f:
     data = json.load(f)
