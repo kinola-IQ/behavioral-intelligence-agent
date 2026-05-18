@@ -7,7 +7,7 @@ logs/
 docs/
 data/
 models/
-
+app/
 
 # files
 *.yml

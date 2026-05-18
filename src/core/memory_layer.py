@@ -1,4 +1,4 @@
-"""Short- and long-term memory for agent context."""
+"""Short-term memory for agent context."""
 
 from langchain_core.tools import tool
 

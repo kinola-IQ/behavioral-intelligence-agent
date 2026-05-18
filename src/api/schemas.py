@@ -10,18 +10,19 @@ class HealthResponse(BaseModel):
 
 
 class UserRequest(BaseModel):
-    """instructs the agent what to simulate"""
-    user_persona: str = Field(...)
-    user_history: str = Field(...)
-    product_details: str = Field(...)
-    sentiment_cue: str = Field(...)
+    """request gotten from the user"""
+    prompt: str = Field(...)
 
 
 class AgentResponse(BaseModel):
-    """agent response format to instructions"""
+    """agent response format"""
     predicted_rating: int = Field(...)
     predicted_review: str = Field(...)
+    agent_status: str = Field(...)
 
+class ChatResponse(BaseModel):
+    """chat respose format"""
+    response_text: str
 
 class UserPersona(BaseModel):
     """summarize the user into model-ready signals."""
@@ -33,6 +34,40 @@ class UserPersona(BaseModel):
     preferred_features: List[str] = Field(...)
     avoid_features: List[str] = Field(...)
     category_patterns: Dict[str, str] = Field(...)
+
+
+class ReviewRetrievalCriteria(BaseModel):
+    """Behavioural metadata filters for retrieving matching review histories.
+
+    Fields align with Chroma metadata stored at index time. The agent should
+    populate these after deducing fit from a ``UserPersona`` (see
+    ``retrieve_text`` docstring for suggested mappings).
+    """
+
+    rating_consistency: str | None = Field(
+        default=None,
+        description="Indexed as 'rating consistency' (e.g. stable, variable).",
+    )
+    sentiment_bias: str | None = Field(
+        default=None,
+        description=(
+            "Indexed as 'sentiment bias'; often maps from sentiment_style."
+        ),
+    )
+    verbal_style: str | None = Field(
+        default=None,
+        description="Indexed as 'verbal style'; often maps from verbosity.",
+    )
+    persona_type: str | None = Field(
+        default=None,
+        description="Indexed as 'persona type'; cultural or archetype label.",
+    )
+    slangs: str | list[str] | None = Field(
+        default=None,
+        description=(
+            "Indexed as 'slangs'; marker phrase(s) for the user style."
+        ),
+    )
 
 
 @dataclass

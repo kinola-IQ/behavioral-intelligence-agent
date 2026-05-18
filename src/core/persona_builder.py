@@ -185,8 +185,8 @@ def model_user(
         A dictionary matching the ``UserPersona`` schema with keys:
         ``rating_bias``, ``sentiment_style``, ``verbosity``, ``tone``,
         ``top_concerns``, ``preferred_features``, ``avoid_features``, and
-        ``category_patterns``. Pass this object to ``context_store`` and the
-        prompt synthesizer for downstream generation.
+        ``category_patterns``. Pass this object to ``context_store``, deduce
+        metadata filters for ``retrieve_text``, and feed the prompt synthesizer.
     """
     persona = build_user_persona(
         user_persona=user_persona,

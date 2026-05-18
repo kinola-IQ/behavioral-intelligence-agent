@@ -21,6 +21,9 @@ class Settings(BaseSettings):
     embedding_model: str = "sentence-transformers/all-MiniLM-L6-v2"
     vectordb_name: str = "review_data"
 
+    # huggingface
+    summarization_model: str = "facebook/bart-large-cnn" 
+
     @property
     def embedding_function(self) -> HuggingFaceEmbeddingFunction:
         return HuggingFaceEmbeddingFunction(

@@ -1,13 +1,13 @@
 """Build and persist vector indexes."""
-
-from typing import Any
-
-from langchain_core.tools import tool
+from typing import Any, Dict, Iterable, List, Tuple
+import numpy as np
+import math
 
 from ..core.utils import VECTORDB
 from ..config.settings import get_settings
 
 
+# connects to db to be used
 def _get_collection():
     """Return the Chroma collection, creating it when missing."""
     if VECTORDB is None:
@@ -28,68 +28,66 @@ def _get_collection():
         )
 
 
-@tool
-def retrieve_text(
-    query: str,
-    n_results: int = 3,
-    metadata: dict[str, Any] | None = None,
-) -> dict[str, Any]:
-    """Retrieve semantically similar documents to ground the recommendation.
+# upload the document to the vector database
+def chunks(dataframe, batch_size: int = 100) -> Iterable[Tuple]:
+    """Yield dataframe in memory-efficient batches with a counter."""
+    # Calculate number of splits (ceil ensures we don't miss leftover rows)
+    num_splits = math.ceil(len(dataframe) / batch_size)
+    for counter, batch in enumerate(np.array_split(dataframe, num_splits), start=1):
+        yield batch, counter
 
-    Implements the RAG Pipeline stage of the recommendation architecture.
-    Queries the vector index for past interactions, product notes, or other
-    embedded context that matches the agent's search query, reducing blind
-    generation and improving factual alignment in the final recommendation.
 
-    Args:
-        query: Natural-language search text (e.g. product category, user
-            concern, or paraphrased user request).
-        n_results: Maximum number of matching chunks to return. Defaults to
-            ``3``.
-        metadata: Optional Chroma ``where`` filter dict to restrict results
-            (for example ``{"source": "reviews"}``). Pass ``None`` to search
-            the full collection.
-
-    Returns:
-        A dictionary with:
-        - ``documents``: List of retrieved text chunks (may be empty).
-        - ``metadatas``: Parallel list of metadata dicts per chunk.
-        - ``distances``: Parallel list of similarity distances when available.
-        - ``status``: ``"completed"`` on success, or an error descriptor when
-          the vector store is unavailable or the query fails.
+# function to coalate records for upload
+def _prepare_batch_records(batch) -> List[Dict]:
     """
-    if VECTORDB is None:
-        return {
-            "documents": [],
-            "metadatas": [],
-            "distances": [],
-            "status": "failed: vector store not initialized",
+    Prepares records for each user in the batch for upload to a vector database.
+    
+    Args:
+        batch (pd.DataFrame): A dataframe containing user records.
+    
+    Returns:
+        List[Dict]: A list of dictionaries, each representing a vector record.
+    """
+    vectors = []
+
+    for _, row in batch.iterrows():
+        # User ID
+        user_id = str(row['record_id'])
+
+        # Reviews (assuming columns are named 'history[0]', 'history[1]', etc.)
+        reviews = [row.get(f'history[{i}]') for i in range(5)]
+
+        # Nigerian slangs used (assuming columns exist)
+        slangs = [row.get(f'nigerian_adaptation.suggested_markers[{i}]') for i in range(3)]
+
+        # Metadata
+        metadata = {
+            'rating consistency': row.get('behavioral_profile.rating_consistency'),
+            'sentiment bias': row.get('behavioral_profile.sentiment_bias'),
+            'verbal style': row.get('behavioral_profile.verbal_style'),
+            'persona type': row.get('nigerian_adaptation.persona_type'),
+            'slangs': slangs
         }
 
-    try:
-        collection = _get_collection()
-        query_kwargs: dict[str, Any] = {
-            "query_texts": [query],
-            "n_results": n_results,
-        }
-        if metadata:
-            query_kwargs["where"] = metadata
+        # Vector record
+        vectors.append({
+            'user id': user_id,
+            'reviews': reviews,
+            'metadata': metadata
+        })
 
-        results = collection.query(**query_kwargs)
-        documents = (results.get("documents") or [[]])[0]
-        metadatas = (results.get("metadatas") or [[]])[0]
-        distances = (results.get("distances") or [[]])[0]
+    return vectors
 
-        return {
-            "documents": documents,
-            "metadatas": metadatas,
-            "distances": distances,
-            "status": "completed",
-        }
-    except Exception as exc:
-        return {
-            "documents": [],
-            "metadatas": [],
-            "distances": [],
-            "status": f"failed: {exc}",
-        }
+def upload_data(dataframe):
+    """Upload dataframe records to vector database in batches."""
+    collection = _get_collection()
+    for batch, _ in chunks(dataframe):
+        vectors = _prepare_batch_records(batch)
+        # Upsert each record in the batch
+        for data in vectors:
+            collection.upsert(
+                ids=[data['user id']],
+                documents=[data['reviews']],
+                metadatas=[data['metadata']]
+            )
+        
