@@ -3,7 +3,7 @@ from transformers import pipeline
 from ..core.prompt_engine import recommender_prompt
 
 
-def review_llm(prompt: str):
+def recommendation_llm(prompt: str):
     """provides recommendations to users based on persona"""
     try:
         pipe = pipeline("text-generation", model="deepseek-ai/DeepSeek-V4-Pro")
@@ -12,5 +12,5 @@ def review_llm(prompt: str):
             {'role': 'user', 'content': prompt}
         ]
         return pipe(messages)
-    except Exceptions:
+    except Exception:
         return "model could not draft a response"
