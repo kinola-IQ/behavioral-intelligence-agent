@@ -90,20 +90,22 @@ def prompt_setup():
 
     return system_prompt, prompt_template
 
+
 # makeshift session(aka long-term) memory for multiturn conversation
-def session_store(prompt = None, model_response= None):
+def session_store(prompt=None, model_response=None):
     """stores interaction data of user and recommender chat"""
     session = []
     try:
         if prompt and model_response is None:
-            return session
-        session_store.append({
+            return f'`{session}`'
+        session.append(str({
             'user preciousely asked': prompt,
-            'you responded with' : model_response
-        })
-        return session
+            'you responded with': model_response
+        }))
+        return '\n'.join(session)
     except Exception as exc:
         raise Exception("could not store session") from exc
+
 
 # main review prompt
 def review_generation_prompt():
@@ -129,14 +131,27 @@ def recommender_prompt():
     - Base the persona on the following below:
     {asyncio.wait_for(retrieve_user_persona(), timeout=15)}
 
-    Note: 
+    Note:
     Your previous interaction is as follows:
     {asyncio.wait_for(session_store(), timeout=15)}.
-    if previous interaction is '[]' then it means it's a fresh session.
+    if previous interaction is `[]` then it means it's a fresh session.
 
     """ + "question: {question}"
 
-    prompt =  prompt_structure = PromptTemplate.from_template(
-        template = prompt
+    prompt = PromptTemplate.from_template(
+        template=prompt_template
     )
     return prompt
+
+
+# evaluator prompts
+# plan adherence prompt
+def recommendation_plan():
+    """generation plan on which the chat outputs would be evaluated on"""
+    return f"""
+        Rules:
+        - Be accurate and do not hallucinate missing facts.
+        - Match tone to the sentiment cue.
+        - Base the persona on the following below:
+        {asyncio.wait_for(retrieve_user_persona(), timeout=15)}
+        """
