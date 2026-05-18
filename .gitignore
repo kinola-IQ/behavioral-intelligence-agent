@@ -40,11 +40,11 @@ ENV/
 .ipynb_checkpoints/
 
 # Data & artifacts (keep structure via .gitkeep where needed)
-data/raw/*
+# data/raw/*
 !data/raw/.gitkeep
-data/processed/*
+# data/processed/*
 !data/processed/.gitkeep
-data/embeddings/*
+# data/embeddings/*
 !data/embeddings/.gitkeep
 data/samples/*
 !data/samples/.gitkeep
