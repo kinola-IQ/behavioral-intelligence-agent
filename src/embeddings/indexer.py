@@ -80,6 +80,7 @@ def _prepare_batch_records(batch) -> List[Dict]:
 
 def upload_data(dataframe):
     """Upload dataframe records to vector database in batches."""
+    
     collection = _get_collection()
     for batch, _ in chunks(dataframe):
         vectors = _prepare_batch_records(batch)
