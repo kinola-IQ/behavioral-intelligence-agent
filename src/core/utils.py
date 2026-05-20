@@ -4,6 +4,10 @@ from langgraph.store.memory import InMemoryStore
 import chromadb
 from langchain_groq import ChatGroq
 from ..config.constants import EMBEDS_DIR
+from..config.settings import Settings
+
+
+settings = Settings()
 
 MEMORY: InMemoryStore | None = None
 VECTORDB: chromadb | None = None
@@ -18,7 +22,7 @@ async def startup_resources() -> None:
     MEMORY = InMemoryStore(
         index={
             "dims": 1536,
-            "embed": "openai:text-embedding-3-small",
+            "embed": f"huggingface:{settings.embedding_model}",
         }
     )
 
