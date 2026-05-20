@@ -11,6 +11,5 @@ models/
 # files
 *.yml
 *.env*
-*.toml
 LICENSE
 architecture_explanation.pdf

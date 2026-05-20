@@ -19,3 +19,4 @@ langchain-huggingface>=1.2.2
 streamlit_mermaid>=0.0.0
 sentence-transformers>=5.5.0
 accelerate>=1.13.0
+torchvision>=0.27.0
