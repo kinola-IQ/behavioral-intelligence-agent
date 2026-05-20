@@ -22,10 +22,11 @@ class Settings(BaseSettings):
     vectordb_name: str = "review_data"
 
     # huggingface
-    summarization_model: str = "facebook/bart-large-cnn" 
+    summarization_model: str = "facebook/bart-large-cnn"
 
     @property
     def embedding_function(self) -> HuggingFaceEmbeddingFunction:
+        """serves instace for generating embeddings"""
         return HuggingFaceEmbeddingFunction(
             model_name=self.embedding_model,
             api_key=os.environ.get("HUGGINGFACE_API_KEY"),
