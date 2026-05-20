@@ -11,10 +11,10 @@ from tenacity import (
 
 from .routes import router
 from ..core.utils import startup_resources
-from ..config.settings import Settings
+from ..config.settings import get_settings
 
 # config values
-settings = Settings()
+settings = get_settings()
 
 
 @asynccontextmanager
