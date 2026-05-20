@@ -1,16 +1,42 @@
 """Generate recommendations from retrieved evidence."""
-from transformers import pipeline
-from ..core.prompt_engine import recommender_prompt
+import asyncio
+from ..core import utils
+from ..core.prompt_engine import recommender_prompt, session_store
+from ..core.memory_layer import retrieve_user_persona
+from ..config.settings import Settings
 
 
-def recommendation_llm(prompt: str):
-    """provides recommendations to users based on persona"""
+def recommendation_llm(question: str) -> str:
+    """Provides recommendations to users based on persona."""
+    settings = Settings()
+
+    if utils.HF_LLM_PROVIDER is None:
+        raise RuntimeError(
+            "HF_LLM_PROVIDER not initialized. Run startup_resources() first."
+        )
+
     try:
-        pipe = pipeline("text-generation", model="deepseek-ai/DeepSeek-V4-Pro")
-        messages = [
-            {'role': 'system', 'content': recommender_prompt},
-            {'role': 'user', 'content': prompt}
-        ]
-        return pipe(messages)
-    except Exception:
-        return "model could not draft a response"
+        # define prompt format
+        prompt = recommender_prompt().format(
+            user_persona=asyncio.wait_for(retrieve_user_persona(), timeout=15),
+            session_history=asyncio.wait_for(session_store(), timeout=15),
+            question=question,
+        )
+        completion = utils.HF_LLM_PROVIDER.chat.completions.create(
+            model=settings.chat_model,
+            messages=[
+                {
+                    "role": "system",
+                    "content": prompt,
+                },
+                {
+                    "role": "user",
+                    "content": question,
+                },
+            ],
+        )
+
+        return completion.choices[0].message.content.strip()
+
+    except Exception as exc:
+        raise RuntimeError(f"Inference failed: {exc}")

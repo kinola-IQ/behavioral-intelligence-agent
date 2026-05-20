@@ -25,6 +25,7 @@ class Settings(BaseSettings):
 
     # huggingface
     summarization_model: str = "facebook/bart-large-cnn"
+    chat_model: str = "deepseek-ai/DeepSeek-V4-Pro:novita"  # "sapientinc/HRM-Text-1B"
 
     @property
     def embedding_function(self) -> HuggingFaceEmbeddingFunction:

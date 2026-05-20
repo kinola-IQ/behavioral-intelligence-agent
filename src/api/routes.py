@@ -22,8 +22,9 @@ def health() -> dict[str, str]:
 def review_generator(request: UserRequest):
     """parses request from user to orchestrator"""
     try:
-        agent = review_generator_agent()
-        query_agent = agent.invoke({'messages': [('human', request.prompt)]})
+        agent = review_generator_agent(request.prompt)
+        query_agent = agent.invoke(
+            {"messages": [{"role": "user", "content": request.prompt}]})
         response = query_agent['messages'][-1]['content']
         return AgentResponse(
             predicted_rating=response['predicted_rating'],
@@ -53,7 +54,7 @@ def recommendation_chat(
         return ChatResponse(
             response_text=response
         )
-    except Exception:
-        return chatResponse(
-            response_text='could not generate a response'
+    except Exception as exc:
+        return ChatResponse(
+            response_text=f'{exc}: could not generate a response'
         )

@@ -4,7 +4,7 @@ from openevals.llm import create_llm_as_judge
 from openevals.prompts import PLAN_ADHERENCE_PROMPT, RAG_HELPFULNESS_PROMPT
 
 # resource
-from ..core.utils import LLM
+from ..core import utils
 
 # plans
 from ..core.prompt_engine import recommendation_plan
@@ -16,7 +16,7 @@ def _llm_evaluator(prompt: PLAN_ADHERENCE_PROMPT | RAG_HELPFULNESS_PROMPT,
     return create_llm_as_judge(
         prompt=prompt,
         feedback_key=feedback_key,
-        model=LLM,
+        model=utils.LLM,
     )
 
 
