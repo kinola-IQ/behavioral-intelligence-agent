@@ -1,5 +1,4 @@
 """FastAPI application entrypoint."""
-
 from contextlib import asynccontextmanager
 import uvicorn
 from fastapi import FastAPI
@@ -12,6 +11,10 @@ from tenacity import (
 
 from .routes import router
 from ..core.utils import startup_resources
+from ..config.settings import Settings
+
+# config values
+settings = Settings()
 
 
 @asynccontextmanager
@@ -35,4 +38,6 @@ def create_app():
 server = create_app()
 
 if __name__ == "__main__":
-    uvicorn.run("src.api.main:server", host="0.0.0.0", port=8000, reload=True)
+    uvicorn.run(
+        "src.api.main:server", host=settings.api_host,
+        port=settings.api_port, reload=True)
