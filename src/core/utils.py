@@ -6,7 +6,7 @@ from langchain_groq import ChatGroq
 
 from huggingface_hub import InferenceClient
 from ..config.constants import EMBEDS_DIR
-from..config.settings import Settings
+from ..config.settings import Settings
 
 
 settings = Settings()
