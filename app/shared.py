@@ -20,17 +20,15 @@ for _path in (_PROJECT_ROOT, _APP_DIR):
 from src.config.constants import PROCESSED_DATA_DIR
 from src.core.persona_builder import build_user_persona
 
+
 DEFAULT_API_BASE = os.getenv("API_BASE_URL", "http://localhost:8000/api/v1")
 PERSONA_LIBRARY_PATH = PROCESSED_DATA_DIR / "persona_library_flattened.json"
 
+
 SENTIMENT_CUES = [
     "critical",
-    "balanced",
-    "generous",
-    "negative",
-    "positive",
-    "enthusiastic",
-    "cautious",
+    "Generous",
+   
 ]
 
 DEMO_USER_PERSONA = (
@@ -106,7 +104,7 @@ def persona_to_retrieval_filters(persona: dict[str, Any]) -> dict[str, str]:
     """Map UserPersona fields to Chroma metadata keys for retrieval demos."""
     rating_bias = persona.get("rating_bias", 3)
     if rating_bias <= 2:
-        consistency = "variable"
+        consistency = "Volatile"
     elif rating_bias >= 4:
         consistency = "stable"
     else:

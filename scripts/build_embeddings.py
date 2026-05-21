@@ -7,10 +7,11 @@ from src.config.constants import PROCESSED_DATA_DIR
 
 def main() -> None:
     """pipeline for indexing and uploading to vectordabase"""
-    data = PROCESSED_DATA_DIR / "persona_library_formatted_wide.csv"
+    data = PROCESSED_DATA_DIR / "persona_library_cleaned.csv"
     try:
         data = pd.read_csv(data)
         upload_data(data)
+        print('vector database populated')
         return log_event('vector database populated successfully')
     except Exception as exc:
         raise SystemExit("Implement embedding build pipeline.") from exc

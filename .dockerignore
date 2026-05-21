@@ -10,6 +10,8 @@ models/
 
 # files
 *.yml
+*.toml
 *.env*
 LICENSE
 architecture_explanation.pdf
+tests\experimental-tests.ipynb

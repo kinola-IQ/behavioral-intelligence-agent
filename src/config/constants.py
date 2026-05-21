@@ -2,9 +2,10 @@
 
 from pathlib import Path
 
-PROJECT_ROOT = Path(__file__).resolve().parents[3]
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
 DATA_DIR = PROJECT_ROOT / "data"
 MODELS_DIR = PROJECT_ROOT / "models"
 LOGS_DIR = PROJECT_ROOT / "logs"
 EMBEDS_DIR = PROJECT_ROOT / "data" / "embeddings"
 PROCESSED_DATA_DIR = PROJECT_ROOT / "data" / "processed"
+

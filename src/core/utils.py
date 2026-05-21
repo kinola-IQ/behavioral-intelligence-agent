@@ -1,6 +1,5 @@
 """Shared helpers for core modules."""
 import os
-from transformers import pipeline
 from langgraph.store.memory import InMemoryStore
 import chromadb
 from langchain_groq import ChatGroq
@@ -13,7 +12,7 @@ from..config.settings import Settings
 settings = Settings()
 
 MEMORY: InMemoryStore | None = None
-VECTORDB: chromadb | None = None
+VECTORDB = None
 LLM: ChatGroq | None = None
 HF_LLM_PROVIDER: InferenceClient | None = None
 
@@ -43,6 +42,7 @@ async def startup_resources() -> None:
     HF_LLM_PROVIDER = InferenceClient(
         api_key=os.environ["HUGGINGFACE_API_KEY"],
     )
+
 
 
 def startup_status():

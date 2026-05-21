@@ -1,6 +1,7 @@
 """HTTP routes."""
 
 from fastapi import APIRouter, BackgroundTasks
+from tenacity import retry, wait_random_exponential, stop_after_attempt
 from .schemas import UserRequest, AgentResponse, ChatResponse
 from ..core.prompt_engine import session_store
 from ..core.utils import startup_status
@@ -19,10 +20,11 @@ def health() -> dict[str, str]:
 
 
 @router.post('/generate_review', response_model=AgentResponse)
+@retry(wait=wait_random_exponential(10,60), stop=stop_after_attempt(2))
 def review_generator(request: UserRequest):
     """parses request from user to orchestrator"""
     try:
-        agent = review_generator_agent(request.prompt)
+        agent = review_generator_agent()
         query_agent = agent.invoke(
             {"messages": [{"role": "user", "content": request.prompt}]})
         response = query_agent['messages'][-1]['content']

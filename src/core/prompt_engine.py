@@ -2,6 +2,7 @@
 import asyncio
 
 from langchain_core.prompts import FewShotPromptTemplate, PromptTemplate
+from langchain.tools import tool
 from .memory_layer import retrieve_user_persona
 
 # makeshift session(aka long-term) memory for multiturn conversation

@@ -56,13 +56,13 @@ def _infer_rating_bias(user_history: str, sentiment_cue: str) -> int:
 
 
 def _infer_sentiment_style(sentiment_cue: str) -> str:
-    return sentiment_cue.strip().lower() or "balanced"
+    return sentiment_cue.strip().lower() or "generous"
 
 
 def _infer_verbosity(user_history: str) -> str:
     word_count = len(user_history.split())
     if word_count > 80:
-        return "verbose"
+        return "detailed"
     if word_count < 25:
         return "concise"
     return "moderate"
@@ -178,8 +178,7 @@ def model_user(
         user_history: Past review or interaction patterns (typical ratings,
             recurring themes, length of reviews).
         product_details: Description of the product or context being evaluated.
-        sentiment_cue: Desired sentiment for the output (e.g. ``critical``,
-            ``balanced``, ``generous``).
+        sentiment_cue: Desired sentiment for the output (e.g. ``critical``, ``generous``).
 
     Returns:
         A dictionary matching the ``UserPersona`` schema with keys:

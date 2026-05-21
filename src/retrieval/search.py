@@ -6,7 +6,7 @@ from langchain_core.tools import tool
 
 from ..core.utils import VECTORDB
 from ..embeddings.indexer import _get_collection
-from .context_summarizer import summarize_reviews
+from .context_summarizer import summarize_context
 # Snake_case aliases the agent may pass after deducing filters from UserPersona.
 _METADATA_ALIASES: dict[str, str] = {
     "rating_consistency": "rating consistency",
@@ -56,11 +56,12 @@ def retrieve_text(
     it returns stored review histories for users whose profile metadata matches.
 
     Indexed metadata fields (use these keys or snake_case aliases):
-        - ``rating consistency`` / ``rating_consistency``: typical rating spread.
-        - ``sentiment bias`` / ``sentiment_bias``: e.g. critical, balanced.
-        - ``verbal style`` / ``verbal_style``: e.g. concise, verbose.
-        - ``persona type`` / ``persona_type``: cultural or archetype label.
-        - ``slangs``: marker phrases (string or list for ``$in`` matching).
+        - ``rating consistency`` / ``rating_consistency``: either Stable or Volatile.
+        - ``sentiment bias`` / ``sentiment_bias``: either critical or generous.
+        - ``verbal style`` / ``verbal_style``: either detailed or concise.
+        - ``persona type`` / ``persona_type``: 'Lagos Consumer Proxy' label.
+        - ``slangs``: marker phrases (string or list for ``$in`` matching), 
+                    ``slangs`` options include and are limited to: sha, correct, abeg, too much, standard, non-standard.
 
     Suggested mapping from ``UserPersona`` when deducing filters:
         - ``sentiment_style`` → ``sentiment_bias``
@@ -115,7 +116,7 @@ def retrieve_text(
         ids = results.get("ids") or []
 
         # need to summarize retrieved reviews to prevent bloating the model
-        summarized_docs = summarize_reviews(documents)
+        summarized_docs = summarize_context(documents)
         return {
             "reviews": summarized_docs,
             "metadatas": metadatas,

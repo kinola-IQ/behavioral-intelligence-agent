@@ -1,28 +1,30 @@
 """Build and persist vector indexes."""
-from typing import Any, Dict, Iterable, List, Tuple
-import numpy as np
 import math
+from typing import Dict, Iterable, List, Tuple
+import numpy as np
 
-from ..core.utils import VECTORDB
+
+from ..core import utils
 from ..config.settings import get_settings
+from ..logging.audit_log import log_event
 
 
 # connects to db to be used
 def _get_collection():
     """Return the Chroma collection, creating it when missing."""
-    if VECTORDB is None:
+    if utils.VECTORDB is None:
         raise RuntimeError(
             "Vector store not initialized; call startup_resources() before retrieval."
         )
 
     settings = get_settings()
     try:
-        return VECTORDB.get_collection(
+        return utils.VECTORDB.get_collection(
             name=settings.vectordb_name,
             embedding_function=settings.embedding_function,
         )
     except Exception:
-        return VECTORDB.create_collection(
+        return utils.VECTORDB.create_collection(
             name=settings.vectordb_name,
             embedding_function=settings.embedding_function,
         )
@@ -35,6 +37,7 @@ def chunks(dataframe, batch_size: int = 100) -> Iterable[Tuple]:
     num_splits = math.ceil(len(dataframe) / batch_size)
     for counter, batch in enumerate(np.array_split(dataframe, num_splits), start=1):
         yield batch, counter
+        log_event(f"batch{counter} processing...")
 
 
 # function to coalate records for upload
@@ -62,10 +65,10 @@ def _prepare_batch_records(batch) -> List[Dict]:
 
         # Metadata
         metadata = {
-            'rating consistency': row.get('behavioral_profile.rating_consistency'),
-            'sentiment bias': row.get('behavioral_profile.sentiment_bias'),
-            'verbal style': row.get('behavioral_profile.verbal_style'),
-            'persona type': row.get('nigerian_adaptation.persona_type'),
+            'rating consistency': row.get('behavioral_profile.rating_consistency').lower(),
+            'sentiment bias': row.get('behavioral_profile.sentiment_bias').lower(),
+            'verbal style': row.get('behavioral_profile.verbal_style').lower(),
+            'persona type': row.get('nigerian_adaptation.persona_type').lower(),
             'slangs': slangs
         }
 
@@ -75,12 +78,12 @@ def _prepare_batch_records(batch) -> List[Dict]:
             'reviews': reviews,
             'metadata': metadata
         })
-
+    log_event('records successfully prepared')
     return vectors
+
 
 def upload_data(dataframe):
     """Upload dataframe records to vector database in batches."""
-    
     collection = _get_collection()
     for batch, _ in chunks(dataframe):
         vectors = _prepare_batch_records(batch)
