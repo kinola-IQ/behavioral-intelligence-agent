@@ -12,6 +12,7 @@ from shared import check_api_health, render_api_sidebar, start_backend
 
 
 # we want the local end points available
+st.session_state['backend connection'] = False
 start_backend()
 
 st.set_page_config(
