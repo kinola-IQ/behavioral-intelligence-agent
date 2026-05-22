@@ -57,7 +57,7 @@ def context_store(persona: UserPersona, user_id: str = "my-user") -> str:
         return "failed to store memory"
 
 
-async def retrieve_user_persona(user_id: str = "my-user") -> str | None:
+def retrieve_user_persona(user_id: str = "my-user") -> str | None:
     """Load a previously stored persona as formatted text for prompt assembly.
 
     Args:

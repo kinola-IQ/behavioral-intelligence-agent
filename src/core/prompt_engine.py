@@ -69,9 +69,9 @@ def recommender_prompt():
 
 # evaluator prompts
 # plan adherence prompt
-async def recommendation_plan(persona: str):
+def recommendation_plan(persona: str):
     """Generation plan used to evaluate recommendation outputs."""
-    persona = await retrieve_user_persona()
+    persona = retrieve_user_persona()
     return f"""
     Rules:
     - Be accurate and do not hallucinate missing facts.

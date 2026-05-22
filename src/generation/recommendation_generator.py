@@ -5,7 +5,7 @@ from ..core.memory_layer import retrieve_user_persona
 from ..config.settings import Settings
 
 
-async def recommendation_llm(question: str) -> str:
+def recommendation_llm(question: str) -> str:
     """Provides recommendations to users based on persona."""
     settings = Settings()
 
@@ -17,8 +17,8 @@ async def recommendation_llm(question: str) -> str:
     try:
         # define prompt format
         prompt = recommender_prompt().format(
-            user_persona=await retrieve_user_persona(),
-            session_history=await session_store(),
+            user_persona=retrieve_user_persona(),
+            session_history=session_store(),
             question=question,
         )
         completion = utils.HF_LLM_PROVIDER.chat.completions.create(
