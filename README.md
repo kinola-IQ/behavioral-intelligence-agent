@@ -10,6 +10,9 @@ A persona-aware system that models shoppers from behavioural signals, retrieves 
 4. **Generation** — A LangGraph ReAct agent predicts rating + review; a separate Hugging Face chat path drafts recommendations from stored persona and session history.
 5. **Evaluation** — LLM-as-judge metrics (helpfulness, plan adherence) via OpenEvals.
 
+## System Design Plan
+![system design plan](https://github.com/kinola-IQ/behavioral-intelligence-agent/blob/6c73103a24115db6badd785a4fa97ae51a75ae22/docs/system%20design%20plan.png)
+
 ## Repository layout
 
 | Path | Purpose |
