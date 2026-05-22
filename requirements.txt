@@ -24,3 +24,5 @@ accelerate
 torchvision
 huggingface-hub
 chroma
+protoc >= 3.19.0
+protobuf<=3.20
