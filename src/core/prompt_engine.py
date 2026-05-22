@@ -1,6 +1,4 @@
 """Compose prompts from templates and runtime context."""
-import asyncio
-
 from langchain_core.prompts import FewShotPromptTemplate, PromptTemplate
 from langchain.tools import tool
 from .memory_layer import retrieve_user_persona
@@ -71,9 +69,9 @@ def recommender_prompt():
 
 # evaluator prompts
 # plan adherence prompt
-def recommendation_plan(persona: str):
+async def recommendation_plan(persona: str):
     """Generation plan used to evaluate recommendation outputs."""
-    persona = asyncio.wait_for(retrieve_user_persona(), timeout=15)
+    persona = await retrieve_user_persona()
     return f"""
     Rules:
     - Be accurate and do not hallucinate missing facts.

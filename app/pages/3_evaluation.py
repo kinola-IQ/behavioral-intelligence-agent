@@ -17,7 +17,7 @@ st.title("Evaluation")
 st.caption("Runs `evaluation_pipeline` — helpfulness and plan adherence (OpenEvals judges).")
 
 st.warning(
-    "Evaluation calls the configured LLM judge (`GROQ_API_KEY` required). "
+    "Evaluation calls the configured LLM judge. "
     "Runs can take 30–90 seconds per metric."
 )
 

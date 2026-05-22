@@ -8,7 +8,11 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 import streamlit as st
 import streamlit_mermaid as stmd
 
-from shared import check_api_health, render_api_sidebar
+from shared import check_api_health, render_api_sidebar, start_backend
+
+
+# we want the local end points available
+start_backend()
 
 st.set_page_config(
     page_title="Behavioural Intelligence Agent",
@@ -28,7 +32,7 @@ ok, status = check_api_health()
 status_col, _ = st.columns([1, 3])
 with status_col:
     if ok:
-        st.success(f"Backend ready — {status}")
+        st.rerun()
     else:
         st.info(status)
 
@@ -83,3 +87,4 @@ with st.expander("Request flow (architecture)"):
             E --> F[evaluation_pipeline]
         """
     )
+

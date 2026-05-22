@@ -22,7 +22,7 @@ def _llm_evaluator(prompt: PLAN_ADHERENCE_PROMPT | RAG_HELPFULNESS_PROMPT,
 
 # generation quality
 # helpfullness
-def helpfulness(input: str, output: str):
+async def helpfulness(input: str, output: str):
     evaluator = _llm_evaluator(
         RAG_HELPFULNESS_PROMPT, feedback_key='helpfullness')
     eval_result = evaluator(
@@ -33,12 +33,12 @@ def helpfulness(input: str, output: str):
 
 
 # plan adherance
-def plan_adherence(input: str, output: str):
+async def plan_adherence(input: str, output: str):
     evaluator = _llm_evaluator(
         PLAN_ADHERENCE_PROMPT, feedback_key='plan adherence')
     eval_result = evaluator(
         inputs=input,
         outputs=output,
-        plan=recommendation_plan()
+        plan= await recommendation_plan()
         )
     return eval_result

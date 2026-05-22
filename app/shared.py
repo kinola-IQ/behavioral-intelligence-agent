@@ -4,6 +4,9 @@ from __future__ import annotations
 
 import json
 import os
+import socket
+import threading
+import uvicorn
 import sys
 from pathlib import Path
 from typing import Any
@@ -19,6 +22,11 @@ for _path in (_PROJECT_ROOT, _APP_DIR):
 
 from src.config.constants import PROCESSED_DATA_DIR
 from src.core.persona_builder import build_user_persona
+
+from src.config.settings import Settings
+
+# we need access to the server ports and other relevant variables
+settings = Settings()
 
 
 DEFAULT_API_BASE = os.getenv("API_BASE_URL", "http://localhost:8000/api/v1")
@@ -49,6 +57,31 @@ def api_base_url() -> str:
     return st.session_state.get("api_base_url", DEFAULT_API_BASE).rstrip("/")
 
 
+# backend startup
+def port_in_use(host, port):
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        return s.connect_ex((host, port)) == 0
+
+
+def run_backend():
+    uvicorn.run(
+        "src.api.main:server",
+        host=settings.api_host,
+        port=settings.api_port,
+        reload=False
+    )
+
+
+@st.cache_resource
+def start_backend():
+     # we need the server up and running for requests to go through to the backend
+    if not port_in_use(settings.api_host, settings.api_port):
+        threading.Thread(
+            target=run_backend,
+            daemon=True
+        ).start()
+
+
 def compose_review_prompt(
     user_persona: str,
     user_history: str,
@@ -75,7 +108,7 @@ def check_api_health(timeout: float = 3.0) -> tuple[bool, str]:
         status = payload.get("status", "unknown")
         return status.lower() in {"ok", "success"}, str(status)
     except httpx.ConnectError:
-        return False, "API unreachable — start with `uvicorn src.api.main:server --reload`"
+        return False, "Backend is booting up, please wait a few minutes"
     except Exception as exc:
         return False, f"Health check failed: {exc}"
 
@@ -188,6 +221,6 @@ def render_api_sidebar() -> None:
     )
     ok, status = check_api_health()
     if ok:
-        st.sidebar.success(f"API: {status}")
+        st.sidebar.success(f"API connection status: {status}")
     else:
         st.sidebar.warning(status)

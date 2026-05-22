@@ -1,12 +1,11 @@
 """Generate recommendations from retrieved evidence."""
-import asyncio
 from ..core import utils
 from ..core.prompt_engine import recommender_prompt, session_store
 from ..core.memory_layer import retrieve_user_persona
 from ..config.settings import Settings
 
 
-def recommendation_llm(question: str) -> str:
+async def recommendation_llm(question: str) -> str:
     """Provides recommendations to users based on persona."""
     settings = Settings()
 
@@ -18,8 +17,8 @@ def recommendation_llm(question: str) -> str:
     try:
         # define prompt format
         prompt = recommender_prompt().format(
-            user_persona=asyncio.wait_for(retrieve_user_persona(), timeout=15),
-            session_history=asyncio.wait_for(session_store(), timeout=15),
+            user_persona=await retrieve_user_persona(),
+            session_history=await session_store(),
             question=question,
         )
         completion = utils.HF_LLM_PROVIDER.chat.completions.create(

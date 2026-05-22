@@ -37,7 +37,3 @@ def create_app():
 
 server = create_app()
 
-if __name__ == "__main__":
-    uvicorn.run(
-        "src.api.main:server", host=settings.api_host,
-        port=settings.api_port, reload=True)
