@@ -42,11 +42,11 @@ def review_generator(request: UserRequest):
 
 
 @router.post('/generate_recommendation', response_model=ChatResponse)
-async def recommendation_chat(
+def recommendation_chat(
         request: UserRequest, background_tasks: BackgroundTasks):
     """parses request to the recommendation chat llm"""
     try:
-        response = await recommendation_llm(request.prompt)
+        response = recommendation_llm(request.prompt)
 
         # store interaction into memory
         async def store_interaction():
