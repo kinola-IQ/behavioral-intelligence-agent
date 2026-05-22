@@ -2,6 +2,8 @@ streamlit>=1.57.0
 fastapi>=0.110.0
 uvicorn>=0.27.0
 chromadb==0.5.23
+transformers==4.46.3
+sentence-transformers==3.3.1
 protobuf==3.20.3
 pydantic>=2.6.0
 pydantic-settings>=2.2.0
@@ -18,10 +20,8 @@ langchain_groq>=1.1.2
 openevals>=0.2.0
 langchain-huggingface>=1.2.2
 streamlit_mermaid>=0.0.0
-sentence-transformers>=5.5.0
 accelerate>=1.13.0
 torchvision>=0.27.0
-transformers>=5.9.0
 huggingface-hub>=1.15.0
 chroma>=0.2.0
 protoc >= 3.19.0
