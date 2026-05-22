@@ -24,4 +24,3 @@ accelerate>=1.13.0
 torchvision>=0.27.0
 huggingface-hub>=1.15.0
 chroma>=0.2.0
-protoc >= 3.19.0
