@@ -48,7 +48,7 @@ def recommendation_chat(
         response = recommendation_llm(request.prompt)
 
         # evaluate response from model
-        eval_result = f'{evaluation_pipeline(request.prompt, response)}'
+        eval_result = f"{evaluation_pipeline(request.prompt, response)}"
 
         # store interaction into memory
         async def store_interaction():
