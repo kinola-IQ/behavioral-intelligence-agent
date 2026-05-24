@@ -26,7 +26,7 @@ st.set_page_config(
 
 st.title("Behavioural Intelligence Agent")
 st.caption(
-    "Persona-aware retrieval, review simulation, recommendations, and offline evaluation."
+    "Persona-aware retrieval, review simulation, recommendations, and auto-evaluation."
 )
 
 ok, status = check_api_health()
