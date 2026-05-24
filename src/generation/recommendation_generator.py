@@ -3,6 +3,7 @@ from ..core import utils
 from ..core.prompt_engine import recommender_prompt, session_store
 from ..core.memory_layer import retrieve_user_persona
 from ..config.settings import Settings
+from ..logging.audit_log import log_event
 
 
 def recommendation_llm(question: str) -> str:
@@ -15,10 +16,11 @@ def recommendation_llm(question: str) -> str:
         )
 
     try:
+        log_event("recommendation_llm_invoke", question_chars=len(question))
         # define prompt format
         prompt = recommender_prompt().format(
             user_persona=retrieve_user_persona(),
-            session_history=session_store(),
+            session_history=session_store(fetch=True),
             question=question,
         )
         completion = utils.HF_LLM_PROVIDER.chat.completions.create(

@@ -10,11 +10,9 @@ import streamlit as st
 from shared import (
     check_api_health,
     post_recommendation,
-    render_api_sidebar,
 )
 
 st.set_page_config(page_title="Recommendations", layout="wide")
-render_api_sidebar()
 
 st.title("Recommendations")
 st.caption("Maps to `POST /api/v1/generate_recommendation` and `recommendation_llm`.")
@@ -56,9 +54,15 @@ if user_input:
     else:
         with st.spinner("Generating recommendation…"):
             try:
-                assistant_text = post_recommendation(user_input)
+                chat_response = post_recommendation(user_input)
+                assistant_text = chat_response.get("response_text", "")
+                st.session_state.eval_result = chat_response.get('eval_result', "")
                 if isinstance(assistant_text, list):
                     assistant_text = str(assistant_text)
+
+                # persist interaction to memory
+                st.session_state.user_prompt = user_input
+                st.session_state.assistant_reponse = assistant_text
             except Exception as exc:
                 assistant_text = f"Request failed: {exc}"
 

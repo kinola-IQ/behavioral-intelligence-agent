@@ -10,6 +10,7 @@ import uvicorn
 import sys
 from pathlib import Path
 from typing import Any
+import time
 
 import httpx
 import streamlit as st
@@ -22,6 +23,7 @@ for _path in (_PROJECT_ROOT, _APP_DIR):
 
 from src.config.constants import PROCESSED_DATA_DIR
 from src.core.persona_builder import build_user_persona
+from src.logging.audit_log import configure_audit_logging, log_event
 
 from src.config.settings import Settings
 
@@ -64,8 +66,14 @@ def port_in_use(host, port):
 
 
 def run_backend():
+    configure_audit_logging(settings.log_level)
+    log_event(
+        "streamlit_backend_start",
+        host=settings.api_host,
+        port=settings.api_port,
+    )
     uvicorn.run(
-        "src.api.main:server",
+        "src.api.main:app",
         host=settings.api_host,
         port=settings.api_port,
         reload=False
@@ -106,7 +114,7 @@ def check_api_health(timeout: float = 3.0) -> tuple[bool, str]:
         response.raise_for_status()
         payload = response.json()
         status = payload.get("status", "unknown")
-        return status.lower() in {"ok", "success"}, str(status)
+        return status.lower() in {"ok", "success", "healthy"}, str(status)
     except httpx.ConnectError:
         return False, "Backend is booting up, please wait a few minutes"
     except Exception as exc:
@@ -130,7 +138,7 @@ def post_recommendation(prompt: str, timeout: float = 120.0) -> str:
         timeout=timeout,
     )
     response.raise_for_status()
-    return response.json().get("response_text", "")
+    return response.json()
 
 
 def persona_to_retrieval_filters(persona: dict[str, Any]) -> dict[str, str]:
@@ -211,16 +219,18 @@ def build_persona_from_inputs(
     return model.model_dump()
 
 
-def render_api_sidebar() -> None:
-    st.sidebar.subheader("Connection")
-    st.session_state.setdefault("api_base_url", DEFAULT_API_BASE)
-    st.session_state["api_base_url"] = st.sidebar.text_input(
-        "API base URL",
-        value=st.session_state["api_base_url"],
-        help="FastAPI prefix, e.g. http://localhost:8000/api/v1",
-    )
-    ok, status = check_api_health()
-    if ok:
-        st.sidebar.success(f"API connection status: {status}")
-    else:
-        st.sidebar.warning(status)
+def render_payload(name: str):
+    payload = st.session_state.eval_result.get("payload", {})
+    st.subheader(
+        name.replace("_", " ").title(),
+        help="""
+        0 = agent failed to meet requiremnts
+        1 = the agent met requirements""")
+    results = payload.get(name, {})
+    score = int(results.get("score", ""))
+    comment = comment = results.get("comment","")
+
+    if score is not None:
+        st.metric("Score", score)
+    if comment:
+        st.write(comment)

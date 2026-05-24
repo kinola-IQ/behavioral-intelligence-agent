@@ -16,12 +16,10 @@ from shared import (
     check_api_health,
     compose_review_prompt,
     post_review,
-    render_api_sidebar,
     render_persona_detail,
 )
 
 st.set_page_config(page_title="Review generator", layout="wide")
-render_api_sidebar()
 
 st.title("Review generator")
 st.caption("Maps to `POST /api/v1/generate_review` and `src.generation.review_generator`.")

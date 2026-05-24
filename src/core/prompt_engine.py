@@ -3,20 +3,25 @@ from langchain_core.prompts import FewShotPromptTemplate, PromptTemplate
 from langchain.tools import tool
 from .memory_layer import retrieve_user_persona
 
+
 # makeshift session(aka long-term) memory for multiturn conversation
-def session_store(prompt=None, model_response=None):
-    """stores interaction data of user and recommender chat"""
-    session = []
-    try:
-        if prompt and model_response is None:
-            return f'`{session}`'
-        session.append(str({
-            'user preciousely asked': prompt,
-            'you responded with': model_response
-        }))
-        return '\n'.join(session)
-    except Exception as exc:
-        raise Exception("could not store session") from exc
+session = []
+
+def session_store(prompt=None, model_response=None, fetch=False):
+    """Store or retrieve conversation history."""
+
+    if fetch:
+        return session
+
+    if prompt is None or model_response is None:
+        raise ValueError("Both prompt and model_response are required.")
+
+    session.append({
+        "user_previously_asked": prompt,
+        "assistant_responded_with": model_response
+    })
+
+    return session
 
 
 # main review prompt
@@ -24,14 +29,11 @@ def review_generation_prompt():
     return """
     You are a user-modeling engine.
 
-    Use tools if needed:
-    - model_user
-    - context_store
-    - retrieve_text
+    Workflow:
+    1. Use model_user, context_store, and retrieve_text when they help.
+    2. Finish by calling submit_review with predicted_rating (1-5) and predicted_review.
 
-    Output ONLY JSON:
-    - predicted_rating
-    - predicted_review
+    Do not end with plain text. Always call submit_review for the final answer.
     """
 
 
@@ -53,6 +55,7 @@ def recommender_prompt():
     "Please complete the review generation step first, then try again."
     6. Be concise, specific, and directly relevant to the user.
     7. Output only the final recommendation text. Do not add explanations, headings, labels, or analysis.
+    8. respond in times new roman font
 
     CONTEXT
     User persona:
@@ -69,7 +72,7 @@ def recommender_prompt():
 
 # evaluator prompts
 # plan adherence prompt
-def recommendation_plan(persona: str):
+def recommendation_plan(persona: str = ""):
     """Generation plan used to evaluate recommendation outputs."""
     persona = retrieve_user_persona()
     return f"""

@@ -59,7 +59,7 @@ This reads `data/processed/persona_libray_cleaned.csv` and upserts records into 
 ### Run the API
 
 ```bash
-uvicorn src.api.main:server --reload --host 0.0.0.0 --port 8000
+uvicorn src.api.main:app --reload --host 0.0.0.0 --port 8000
 ```
 
 Health: `GET http://localhost:8000/api/v1/health`

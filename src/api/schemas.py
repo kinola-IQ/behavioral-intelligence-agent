@@ -1,7 +1,7 @@
 """Pydantic request/response models."""
 from dataclasses import dataclass
 from pydantic import BaseModel, Field
-from typing import List, Dict
+from typing import List, Dict, Any
 
 
 class HealthResponse(BaseModel):
@@ -20,9 +20,12 @@ class AgentResponse(BaseModel):
     predicted_review: str = Field(...)
     agent_status: str = Field(...)
 
+
 class ChatResponse(BaseModel):
     """chat respose format"""
     response_text: str
+    eval_result: Any
+
 
 class UserPersona(BaseModel):
     """summarize the user into model-ready signals."""
@@ -46,7 +49,7 @@ class ReviewRetrievalCriteria(BaseModel):
 
     rating_consistency: str | None = Field(
         default=None,
-        description="Indexed as 'rating consistency' (e.g. stable, variable).",
+        description="Indexed as 'rating consistency' (i.e stable, variable).",
     )
     sentiment_bias: str | None = Field(
         default=None,

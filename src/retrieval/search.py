@@ -6,6 +6,7 @@ from langchain_core.tools import tool
 
 from ..core.utils import VECTORDB
 from ..embeddings.indexer import _get_collection
+from ..logging.audit_log import log_event
 from .context_summarizer import summarize_context
 # Snake_case aliases the agent may pass after deducing filters from UserPersona.
 _METADATA_ALIASES: dict[str, str] = {
@@ -103,6 +104,7 @@ def retrieve_text(
         }
 
     try:
+        log_event("retrieve_text_begin", filters=list(metadata.keys()))
         where_clause = _build_where_clause(metadata)
         collection = _get_collection()
         results = collection.get(
@@ -117,6 +119,7 @@ def retrieve_text(
 
         # need to summarize retrieved reviews to prevent bloating the model
         summarized_docs = summarize_context(documents)
+        log_event("retrieve_text_success", count=len(ids))
         return {
             "reviews": summarized_docs,
             "metadatas": metadatas,
@@ -125,6 +128,7 @@ def retrieve_text(
             "status": "completed",
         }
     except ValueError as exc:
+        log_event("retrieve_text_failed")
         return {
             "reviews": [],
             "metadatas": [],
@@ -133,6 +137,7 @@ def retrieve_text(
             "status": f"failed: {exc}",
         }
     except Exception as exc:
+        log_event("retrieve_text_failed_exceptions",error= f"{exc}")
         return {
             "reviews": [],
             "metadatas": [],

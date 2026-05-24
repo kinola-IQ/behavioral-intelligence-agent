@@ -1,4 +1,5 @@
 streamlit
+streamlit_autorefresh
 fastapi
 uvicorn
 chromadb
@@ -16,9 +17,13 @@ pytest
 pytest-asyncio
 jupyter
 ipykernel
-langchain_groq
-openevals
+langchain
+langchain-core
+langchain_groq 
+langgraph
 langchain-huggingface
+tenacity
+openevals
 streamlit_mermaid
 accelerate
 torchvision

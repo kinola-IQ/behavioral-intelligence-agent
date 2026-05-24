@@ -15,7 +15,7 @@ if str(_PROJECT_ROOT) not in sys.path:
 from src.config.constants import EMBEDS_DIR, PROCESSED_DATA_DIR
 from src.core import utils
 from src.embeddings.indexer import upload_data
-from src.logging.audit_log import log_event
+from src.logging.audit_log import configure_audit_logging, log_event
 
 # Processed artifact name (historical typo: "libray" not "library")
 DEFAULT_DATA_FILE = PROCESSED_DATA_DIR / "persona_libray_cleaned.csv"
@@ -42,6 +42,8 @@ def _ensure_vectordb() -> None:
 
 def main() -> None:
     """Load cleaned personas and upsert review histories into Chroma."""
+    configure_audit_logging()
+    log_event("build_embeddings_begin")
     data_path = _resolve_data_path()
     try:
         _ensure_vectordb()

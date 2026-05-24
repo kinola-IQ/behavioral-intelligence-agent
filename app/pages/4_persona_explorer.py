@@ -11,14 +11,12 @@ from shared import (
     load_persona_library_ids,
     load_persona_record,
     persona_to_retrieval_filters,
-    render_api_sidebar,
     render_persona_detail,
 )
 from src.core.persona_builder import build_user_persona
 from src.retrieval.search import retrieve_text
 
 st.set_page_config(page_title="Persona explorer", layout="wide")
-render_api_sidebar()
 
 st.title("Persona explorer")
 st.caption("Browse `persona_library_flattened.json` and probe metadata retrieval.")

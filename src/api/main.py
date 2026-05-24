@@ -12,6 +12,7 @@ from tenacity import (
 from .routes import router
 from ..core.utils import startup_resources
 from ..config.settings import get_settings
+from ..logging.audit_log import configure_audit_logging, log_event
 
 # config values
 settings = get_settings()
@@ -20,7 +21,10 @@ settings = get_settings()
 @asynccontextmanager
 async def lifespan(_app: FastAPI):
     """Initialize resources on startup."""
+    configure_audit_logging(settings.log_level)
+    log_event("api_startup_begin", env=settings.app_env)
     await startup_resources()
+    log_event("api_startup_complete")
     yield
 
 
@@ -35,5 +39,6 @@ def create_app():
     return app
 
 
-server = create_app()
+app = create_app()
+
 

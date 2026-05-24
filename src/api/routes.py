@@ -1,14 +1,15 @@
 """HTTP routes."""
-
+import json
 from fastapi import APIRouter, BackgroundTasks
 from tenacity import retry, wait_random_exponential, stop_after_attempt
 from .schemas import UserRequest, AgentResponse, ChatResponse
 from ..core.prompt_engine import session_store
 from ..core.utils import startup_status
+from ..logging.audit_log import log_event
 # generators
-from ..generation.review_generator import review_generator_agent
+from ..generation.review_generator import generate_review
 from ..generation.recommendation_generator import recommendation_llm
-
+from ..evaluation.evaluator import evaluation_pipeline
 
 router = APIRouter(prefix="/api/v1", tags=["v1"])
 
@@ -24,16 +25,14 @@ def health() -> dict[str, str]:
 def review_generator(request: UserRequest):
     """parses request from user to orchestrator"""
     try:
-        agent = review_generator_agent()
-        query_agent = agent.invoke(
-            {"messages": [{"role": "user", "content": request.prompt}]})
-        response = query_agent['messages'][-1]['content']
+        response = generate_review(request.prompt)
         return AgentResponse(
             predicted_rating=response['predicted_rating'],
             predicted_review=response['predicted_review'],
             agent_status='success'
         )
-    except Exception:
+    except Exception as exc:
+        log_event("review_generator_failed", error=str(exc))
         return AgentResponse(
             predicted_rating=0,
             predicted_review='',
@@ -48,15 +47,22 @@ def recommendation_chat(
     try:
         response = recommendation_llm(request.prompt)
 
+        # evaluate response from model
+        eval_result = f'{evaluation_pipeline(request.prompt, response)}'
+
         # store interaction into memory
         async def store_interaction():
             session_store(request.prompt, response)
+
+        # background tasks
         background_tasks.add_task(store_interaction)
 
         return ChatResponse(
-            response_text=response
+            response_text=response,
+            eval_result={"payload": json.loads(eval_result)}
         )
     except Exception as exc:
         return ChatResponse(
-            response_text=f'{exc}: could not generate a response'
+            response_text=f'{exc}: could not generate a response',
+            eval_result={}
         )

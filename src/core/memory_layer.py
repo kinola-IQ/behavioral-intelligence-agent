@@ -2,8 +2,9 @@
 
 from langchain_core.tools import tool
 
-from .utils import MEMORY
+from ..core import utils
 from ..api.schemas import UserPersona
+from ..logging.audit_log import log_event
 from .persona_builder import _persona_payload
 
 APPLICATION_CONTEXT = "behavioral_intelligence"
@@ -38,12 +39,13 @@ def context_store(persona: UserPersona, user_id: str = "my-user") -> str:
         ``"failed to store memory: store not initialized"`` if startup has not
         run; ``"failed to store memory"`` on unexpected persistence errors.
     """
-    if MEMORY is None:
+    if utils.MEMORY is None:
+        log_event("context_store_failed", reason="memory not initialized")
         return "failed to store memory: store not initialized"
 
     try:
         profile = _persona_payload(persona)
-        MEMORY.put(
+        utils.MEMORY.put(
             _namespace(user_id),
             "persona",
             {
@@ -52,8 +54,10 @@ def context_store(persona: UserPersona, user_id: str = "my-user") -> str:
                 "rules": profile.get("category_patterns", []),
             },
         )
+        log_event("context_store_success", user_id=user_id)
         return "completed"
     except Exception:
+        log_event("context_store_failed", user_id=user_id)
         return "failed to store memory"
 
 
@@ -69,10 +73,10 @@ def retrieve_user_persona(user_id: str = "my-user") -> str | None:
         or ``None`` if the store is unavailable or no persona exists for the
         given ``user_id``.
     """
-    if MEMORY is None:
+    if utils.MEMORY is None:
         return None
 
-    item = MEMORY.get(_namespace(user_id), "persona")
+    item = utils.MEMORY.get(_namespace(user_id), "persona")
     if item is None or item.value is None:
         return None
 
