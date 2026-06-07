@@ -56,7 +56,7 @@ if user_input:
             try:
                 chat_response = post_recommendation(user_input)
                 assistant_text = chat_response.get("response_text", "")
-                st.session_state.eval_result = chat_response.get('eval_result', "")
+                st.session_state.eval_result = chat_response.get("eval_result", {})
                 if isinstance(assistant_text, list):
                     assistant_text = str(assistant_text)
 

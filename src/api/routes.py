@@ -48,7 +48,10 @@ def recommendation_chat(
         response = recommendation_llm(request.prompt)
 
         # evaluate response from model
-        eval_result = f"{evaluation_pipeline(request.prompt, response)}"
+        eval_result = evaluation_pipeline(request.prompt, response)
+
+        if isinstance(eval_result, str):
+            eval_result = json.loads(eval_result)
 
         # store interaction into memory
         async def store_interaction():
@@ -59,7 +62,7 @@ def recommendation_chat(
 
         return ChatResponse(
             response_text=response,
-            eval_result={"payload": json.loads(eval_result)}
+            eval_result={"payload": eval_result}
         )
     except Exception as exc:
         return ChatResponse(

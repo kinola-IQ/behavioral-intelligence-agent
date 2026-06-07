@@ -24,7 +24,7 @@ class AgentResponse(BaseModel):
 class ChatResponse(BaseModel):
     """chat respose format"""
     response_text: str
-    eval_result: Any
+    eval_result: Dict
 
 
 class UserPersona(BaseModel):
