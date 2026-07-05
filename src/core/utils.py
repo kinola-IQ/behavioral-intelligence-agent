@@ -14,7 +14,7 @@ from ..config.constants import EMBEDS_DIR
 from ..config.settings import Settings
 from ..logging.audit_log import log_event
 
-
+import streamlit as st
 settings = Settings()
 
 MEMORY: InMemoryStore | None = None
@@ -47,14 +47,14 @@ async def startup_resources() -> None:
         # model="meta-llama/llama-4-scout-17b-16e-instruct",
         model="llama-3.1-8b-instant",
         # groq_api_key=os.environ['GROQ_API_KEY']
-        groq_api_key=os.environ.get('GROQ_API_KEY', None)
+        groq_api_key=st.secrets["GROQ_API_KEY"]
 
         )
 
     # model provider to be used for chat
     HF_LLM_PROVIDER = InferenceClient(
         # api_key=os.environ["HUGGINGFACE_API_KEY"]
-        api_key=os.environ.get("HUGGINGFACE_API_KEY", None)
+        api_key=st.secrets["HUGGINGFACE_API_KEY"]
 
     )
 
