@@ -122,11 +122,4 @@ if ok:
     render_academic_footer()
 else:
     st.warning(f"Backend starting… {status}")
-    my_bar = st.progress(0)
-    for i in range(100):
-        time.sleep(0.01)
-        if i >= 70:
-            time.sleep(0.5)
-        my_bar.progress(i + 1, text="Connecting to backend…")
-    my_bar.empty()
     st_autorefresh(interval=1000, limit=6, key="healthcheck_refresh")
