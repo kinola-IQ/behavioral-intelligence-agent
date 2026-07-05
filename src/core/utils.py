@@ -47,7 +47,7 @@ async def startup_resources() -> None:
         # model="meta-llama/llama-4-scout-17b-16e-instruct",
         model="llama-3.1-8b-instant",
         # groq_api_key=os.environ['GROQ_API_KEY']
-        groq_api_key=st.secrets["GROQ_API_KEY"]
+        groq_api_key=st.secrets["GROQLLM_API_KEY"]
 
         )
 
