@@ -122,4 +122,4 @@ if ok:
     render_academic_footer()
 else:
     st.warning(f"Backend starting… {status}")
-    st_autorefresh(interval=1000, limit=6, key="healthcheck_refresh")
+    st_autorefresh(interval=1000, limit=1, key="healthcheck_refresh")
