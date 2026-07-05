@@ -46,12 +46,12 @@ async def startup_resources() -> None:
     LLM = ChatGroq(
         # model="meta-llama/llama-4-scout-17b-16e-instruct",
         model="llama-3.1-8b-instant",
-        groq_api_key=os.environ['groq_api_key']
+        groq_api_key=os.environ['GROQ_API_KEY']
         )
 
     # model provider to be used for chat
     HF_LLM_PROVIDER = InferenceClient(
-        api_key=os.environ["huggingface_api_key"]
+        api_key=os.environ["HUGGINGFACE_API_KEY"]
     )
 
     log_event(
