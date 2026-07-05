@@ -8,11 +8,17 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 import streamlit as st
 from streamlit_autorefresh import st_autorefresh
 from shared import render_payload
+from theme import init_academic_page, render_academic_footer, render_section_heading
 
-st.set_page_config(page_title="Evaluation", layout="wide")
+st.set_page_config(page_title="Evaluation", page_icon="📚", layout="wide")
 
-st.title("Evaluation")
-st.caption("Runs `evaluation_pipeline` — helpfulness and plan adherence (OpenEvals judges).")
+init_academic_page(
+    title="Evaluation",
+    subtitle="Runs `evaluation_pipeline` — helpfulness and plan adherence (OpenEvals judges).",
+    section="Module III",
+)
+
+render_section_heading("Judge Metrics")
 
 st.warning(
     "Evaluation calls the configured LLM judge. "
@@ -36,3 +42,5 @@ else:
         with st.expander("model response"):
             st.code(response, language="text")
         render_payload('plan_adherence')
+
+    render_academic_footer("Module III — LLM-as-judge evaluation metrics.")

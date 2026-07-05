@@ -7,15 +7,21 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 import streamlit as st
 
+from theme import init_academic_page, render_academic_footer, render_section_heading
 from shared import (
     check_api_health,
     post_recommendation,
 )
 
-st.set_page_config(page_title="Recommendations", layout="wide")
+st.set_page_config(page_title="Recommendations", page_icon="📚", layout="wide")
 
-st.title("Recommendations")
-st.caption("Maps to `POST /api/v1/generate_recommendation` and `recommendation_llm`.")
+init_academic_page(
+    title="Recommendations",
+    subtitle="Maps to `POST /api/v1/generate_recommendation` and `recommendation_llm`.",
+    section="Module II",
+)
+
+render_section_heading("Dialogue Session")
 
 if "chat_messages" not in st.session_state:
     st.session_state.chat_messages = []
@@ -80,3 +86,5 @@ with st.expander("Example prompts"):
 - *Compare two running shoes for a cautious reviewer who values comfort.*
         """
     )
+
+render_academic_footer("Module II — Multi-turn recommendation dialogue.")

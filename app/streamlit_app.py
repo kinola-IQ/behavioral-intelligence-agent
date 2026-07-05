@@ -12,6 +12,14 @@ import streamlit as st
 import streamlit_mermaid as stmd
 from streamlit_autorefresh import st_autorefresh
 from shared import check_api_health, start_backend
+from theme import (
+    init_academic_page,
+    render_abstract,
+    render_academic_footer,
+    render_module_card,
+    render_section_heading,
+    render_status_badge,
+)
 
 
 # need access to endpoints
@@ -19,68 +27,83 @@ start_backend()
 
 st.set_page_config(
     page_title="Behavioural Intelligence Agent",
-    page_icon="🧠",
+    page_icon="📚",
     layout="wide",
     initial_sidebar_state="expanded",
 )
 
-st.title("Behavioural Intelligence Agent")
-st.caption(
-    "Persona-aware retrieval, review simulation, recommendations, and auto-evaluation."
+init_academic_page(
+    title="Behavioural Intelligence Agent",
+    subtitle=(
+        "Persona-aware retrieval, review simulation, recommendations, "
+        "and auto-evaluation — a research interface for behavioural modelling."
+    ),
+    section="Research Platform",
+    sidebar_brand=True,
 )
 
 ok, status = check_api_health()
+render_status_badge(ok, "System online" if ok else "Backend starting")
+
 if ok:
-    st.markdown("""
-    This UI mirrors the library architecture:
+    render_abstract([
+        "<strong>User modelling</strong> — infer structured personas from behavioural signals (<code>model_user</code>)",
+        "<strong>Context store</strong> — persist persona for multi-turn recommendation (<code>context_store</code>)",
+        "<strong>RAG retrieval</strong> — fetch similar review histories by metadata (<code>retrieve_text</code>)",
+        "<strong>Generation</strong> — predict reviews or draft recommendations",
+        "<strong>Evaluation</strong> — score outputs with helpfulness and plan-adherence judges",
+    ])
 
-    1. **User modelling** — infer structured personas from behavioural signals (`model_user`)
-    2. **Context store** — persist persona for multi-turn recommendation (`context_store`)
-    3. **RAG retrieval** — fetch similar review histories by metadata (`retrieve_text`)
-    4. **Generation** — predict reviews or draft recommendations
-    5. **Evaluation** — score outputs with helpfulness and plan-adherence judges
-    """)
-
-    st.divider()
+    render_section_heading("Research Modules")
 
     col1, col2, col3 = st.columns(3)
 
     with col1:
-        st.subheader("Review generator")
-        st.write(
+        render_module_card(
+            1,
+            "Review Generator",
             "Simulate how a specific shopper would rate and review a product "
-            "using the LangGraph review agent."
+            "using the LangGraph review agent.",
         )
         st.page_link(
             "pages/1_review_generator.py",
-            label="Open review generator →"
+            label="Proceed to review generator →",
         )
 
     with col2:
-        st.subheader("Recommendations")
-        st.write(
+        render_module_card(
+            2,
+            "Recommendations",
             "Chat with the recommendation engine, grounded in stored persona "
-            "and prior session context."
+            "and prior session context.",
         )
         st.page_link(
             "pages/2_recommendations.py",
-            label="Open recommendations →"
+            label="Proceed to recommendations →",
         )
 
     with col3:
-        st.subheader("Evaluation")
-        st.write(
+        render_module_card(
+            3,
+            "Evaluation",
             "Run LLM-as-judge metrics on any prompt/output pair "
-            "(helpfulness, plan adherence)."
+            "(helpfulness, plan adherence).",
         )
         st.page_link(
             "pages/3_evaluation.py",
-            label="Open evaluation →"
+            label="Proceed to evaluation →",
         )
 
+    st.markdown('<hr class="academic-rule">', unsafe_allow_html=True)
+
+    render_module_card(
+        4,
+        "Persona Explorer",
+        "Browse the indexed persona library and probe metadata-filtered retrieval.",
+    )
     st.page_link(
         "pages/4_persona_explorer.py",
-        label="Persona explorer →"
+        label="Proceed to persona explorer →",
     )
 
     with st.expander("Request flow (architecture)"):
@@ -93,13 +116,15 @@ if ok:
             C --> E
             E --> F[evaluation_pipeline]
         """)
+
+    render_academic_footer()
 else:
-    st.warning(f"Backend starting... {status}")
+    st.warning(f"Backend starting… {status}")
     my_bar = st.progress(0)
     for i in range(100):
         time.sleep(0.01)
         if i >= 70:
             time.sleep(0.5)
-        my_bar.progress(i+1, text='connecting to backend...')
+        my_bar.progress(i + 1, text="Connecting to backend…")
     my_bar.empty()
     st_autorefresh(interval=1000, limit=6, key="healthcheck_refresh")

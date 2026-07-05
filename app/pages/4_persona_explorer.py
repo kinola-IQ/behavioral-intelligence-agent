@@ -7,6 +7,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 import streamlit as st
 
+from theme import init_academic_page, render_academic_footer, render_section_heading
 from shared import (
     load_persona_library_ids,
     load_persona_record,
@@ -16,10 +17,15 @@ from shared import (
 from src.core.persona_builder import build_user_persona
 from src.retrieval.search import retrieve_text
 
-st.set_page_config(page_title="Persona explorer", layout="wide")
+st.set_page_config(page_title="Persona explorer", page_icon="📚", layout="wide")
 
-st.title("Persona explorer")
-st.caption("Browse `persona_library_flattened.json` and probe metadata retrieval.")
+init_academic_page(
+    title="Persona Explorer",
+    subtitle="Browse `persona_library_flattened.json` and probe metadata retrieval.",
+    section="Module IV",
+)
+
+render_section_heading("Indexed Corpus")
 
 ids = load_persona_library_ids()
 if not ids:
@@ -39,7 +45,7 @@ profile = record.get("behavioral_profile", {})
 history = record.get("history", [])
 nigerian = record.get("nigerian_adaptation", {})
 
-st.subheader("Indexed behavioural profile")
+render_section_heading("Behavioural Profile")
 p_cols = st.columns(4)
 p_cols[0].write(f"**Sentiment:** {profile.get('sentiment_bias', '—')}")
 p_cols[1].write(f"**Avg rating:** {profile.get('avg_star_rating', '—')}")
@@ -56,8 +62,8 @@ with st.expander(f"Review history ({len(history)} snippets)", expanded=False):
     for idx, snippet in enumerate(history[:5], start=1):
         st.markdown(f"**{idx}.** {snippet[:500]}{'…' if len(snippet) > 500 else ''}")
 
-st.divider()
-st.subheader("Rebuild structured persona")
+st.markdown('<hr class="academic-rule">', unsafe_allow_html=True)
+render_section_heading("Structured Persona Reconstruction")
 st.caption("Runs `build_user_persona` on a condensed summary of this record.")
 
 summary_history = " ".join(history[:2])[:1200]
@@ -78,8 +84,8 @@ if st.button("Build structured persona", type="primary"):
     st.session_state["explorer_persona"] = payload
     render_persona_detail(payload)
 
-st.divider()
-st.subheader("Retrieval probe")
+st.markdown('<hr class="academic-rule">', unsafe_allow_html=True)
+render_section_heading("Retrieval Probe")
 st.caption("Calls `retrieve_text` with metadata filters deduced from the persona.")
 
 n_results = st.slider("Max results", min_value=1, max_value=10, value=5)
@@ -117,3 +123,5 @@ if st.button("Retrieve similar histories"):
             "No matches. Ensure embeddings are built (`scripts/build_embeddings.py`) "
             "and metadata values match indexed labels."
         )
+
+render_academic_footer("Module IV — Persona library exploration and retrieval analysis.")

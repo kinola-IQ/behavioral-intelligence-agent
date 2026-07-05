@@ -7,6 +7,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 import streamlit as st
 
+from theme import init_academic_page, render_academic_footer, render_section_heading
 from shared import (
     DEMO_PRODUCT_DETAILS,
     DEMO_USER_HISTORY,
@@ -19,10 +20,15 @@ from shared import (
     render_persona_detail,
 )
 
-st.set_page_config(page_title="Review generator", layout="wide")
+st.set_page_config(page_title="Review generator", page_icon="📚", layout="wide")
 
-st.title("Review generator")
-st.caption("Maps to `POST /api/v1/generate_review` and `src.generation.review_generator`.")
+init_academic_page(
+    title="Review Generator",
+    subtitle="Maps to `POST /api/v1/generate_review` and `src.generation.review_generator`.",
+    section="Module I",
+)
+
+render_section_heading("Input & Inference")
 
 tab_form, tab_prompt = st.tabs(["Structured inputs", "Free-form prompt"])
 
@@ -125,3 +131,5 @@ if generate or generate_free:
         st.json(result)
 
     st.session_state["last_review_prompt"] = prompt
+
+render_academic_footer("Module I — Review generation via structured persona inputs.")
