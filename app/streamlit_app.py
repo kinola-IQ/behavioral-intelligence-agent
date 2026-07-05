@@ -33,7 +33,9 @@ st.set_page_config(
 )
 
 init_academic_page(
-    title="Behavioural Intelligence Agent",
+    title="Aligning Behavioural Heuristics with\
+            Agentic RAG for Culturally Adapted \
+            Consumer Simulation ",
     subtitle=(
         "Persona-aware retrieval, review simulation, recommendations, "
         "and auto-evaluation — a research interface for behavioural modelling."

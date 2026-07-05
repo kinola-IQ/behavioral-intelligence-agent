@@ -2,7 +2,7 @@
 
 import os
 import re
-from typing import Any, Callable
+from typing import Any, Union, Callable
 
 from langchain_groq import ChatGroq
 from openevals.llm import create_llm_as_judge
@@ -29,7 +29,7 @@ def _evaluation_judge() -> ChatGroq:
 
 
 def _llm_evaluator(
-    prompt: PLAN_ADHERENCE_PROMPT | RAG_HELPFULNESS_PROMPT,
+    prompt: Union[PLAN_ADHERENCE_PROMPT, RAG_HELPFULNESS_PROMPT],
     feedback_key: str,
 ):
     return create_llm_as_judge(
