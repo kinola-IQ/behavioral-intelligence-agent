@@ -29,7 +29,7 @@ def _evaluation_judge() -> ChatGroq:
 
 
 def _llm_evaluator(
-    prompt: Union[PLAN_ADHERENCE_PROMPT, RAG_HELPFULNESS_PROMPT],
+    prompt: str,
     feedback_key: str,
 ):
     return create_llm_as_judge(
