@@ -9,7 +9,6 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 import streamlit as st
-import os
 import streamlit_mermaid as stmd
 from streamlit_autorefresh import st_autorefresh
 from shared import check_api_health, start_backend
@@ -21,15 +20,7 @@ from theme import (
     render_section_heading,
     render_status_badge,
 )
-import toml
 
-def load_config():
-    config = toml.load('config.toml')
-    llm_config = config.get('llm', {})
-    for key, value in llm_config.items():
-        os.environ[key] = str(value)
-
-load_config()
 # need access to endpoints
 start_backend()
 
