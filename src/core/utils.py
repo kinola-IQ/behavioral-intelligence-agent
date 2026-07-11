@@ -51,9 +51,10 @@ async def startup_resources() -> None:
 
     # client for vector database operations
     if (EMBEDS_DIR).exists():
-        
+        VECTORDB = chromadb.Client()
         log_event("startup_resources_vectordb_exists", path=str(EMBEDS_DIR))
-    VECTORDB = chromadb.PersistentClient(path=EMBEDS_DIR)
+    else:
+        VECTORDB = chromadb.PersistentClient(path=EMBEDS_DIR)
 
     # model to be used in review generation
     LLM = ChatGroq(
