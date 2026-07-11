@@ -10,7 +10,6 @@ if str(ROOT) not in sys.path:
 
 import streamlit as st
 import streamlit_mermaid as stmd
-from streamlit_autorefresh import st_autorefresh
 from shared import check_api_health, start_backend
 from theme import (
     init_academic_page,
