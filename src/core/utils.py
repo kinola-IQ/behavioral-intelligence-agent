@@ -8,13 +8,14 @@ from dotenv import load_dotenv
 from langgraph.store.memory import InMemoryStore
 import chromadb
 from langchain_groq import ChatGroq
+from typing import cast
+from langgraph.store.base import IndexConfig
 
 from huggingface_hub import InferenceClient
 from ..config.constants import EMBEDS_DIR
 from ..config.settings import Settings
 from ..logging.audit_log import log_event
 
-import streamlit as st
 settings = Settings()
 
 MEMORY: InMemoryStore | None = None
@@ -29,33 +30,43 @@ async def startup_resources() -> None:
     """Start up resources used by the system."""
     global MEMORY, VECTORDB, LLM, HF_LLM_PROVIDER
 
+    client = InferenceClient(model=settings.embedding_model)
+
+    def hf_embed(texts: list[str]) -> list[list[float]]:
+        return [client.feature_extraction(text).tolist() for text in texts]
+
     log_event("startup_resources_begin")
 
     # for context sharing
     MEMORY = InMemoryStore(
-        index={
+    index=cast(
+        IndexConfig,
+        {
             "dims": 1536,
-            "embed": f"huggingface:{settings.embedding_model}",
-        }
+            "embed": hf_embed,
+            # "embed" : f"huggingface: {settings.embedding_model}",
+        },
     )
+)
 
     # client for vector database operations
+    if (EMBEDS_DIR).exists():
+        
+        log_event("startup_resources_vectordb_exists", path=str(EMBEDS_DIR))
     VECTORDB = chromadb.PersistentClient(path=EMBEDS_DIR)
 
     # model to be used in review generation
     LLM = ChatGroq(
         # model="meta-llama/llama-4-scout-17b-16e-instruct",
         model="llama-3.1-8b-instant",
-        # groq_api_key=os.environ['GROQ_API_KEY']
-        groq_api_key=st.secrets["GROQLLM_API_KEY"]
-
+        groq_api_key=os.environ['GROQ_API_KEY']
+        
         )
 
     # model provider to be used for chat
     HF_LLM_PROVIDER = InferenceClient(
-        # api_key=os.environ["HUGGINGFACE_API_KEY"]
-        api_key=st.secrets["HUGGINGFACE_API_KEY"]
-
+        api_key=os.environ["HUGGINGFACE_API_KEY"]
+        
     )
 
     log_event(
