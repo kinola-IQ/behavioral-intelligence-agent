@@ -31,7 +31,7 @@ from src.config.settings import Settings
 settings = Settings()
 
 
-DEFAULT_API_BASE = os.getenv("API_BASE_URL", "https://project-site-kinola-iq-kinola-iqs-projects.vercel.app/v1")
+DEFAULT_API_BASE = os.getenv("API_BASE_URL", "http://localhost:8000/api/v1")
 PERSONA_LIBRARY_PATH = PROCESSED_DATA_DIR / "persona_library_flattened.json"
 
 
