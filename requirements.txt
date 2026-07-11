@@ -8,3 +8,9 @@ langgraph-prebuilt
 langchain-huggingface
 openevals
 huggingface-hub
+
+streamlit
+scikit-learn
+pytest
+pytest-asyncio
+streamlit_mermaid
