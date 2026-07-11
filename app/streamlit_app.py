@@ -20,7 +20,6 @@ from theme import (
     render_status_badge,
 )
 
-# need access to endpoints
 start_backend()
 
 st.set_page_config(
