@@ -11,6 +11,8 @@ huggingface-hub
 streamlit_mermaid
 streamlit
 sentence_transformers
+streamlit_autorefresh
+torchvision
 # scikit-learn
 # pytest
 # pytest-asyncio
