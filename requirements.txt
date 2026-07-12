@@ -10,6 +10,7 @@ openevals
 huggingface-hub
 streamlit_mermaid
 streamlit
+sentence_transformers
 # scikit-learn
 # pytest
 # pytest-asyncio
