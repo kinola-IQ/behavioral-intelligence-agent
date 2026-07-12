@@ -43,8 +43,8 @@ async def startup_resources() -> None:
         IndexConfig,
         {
             "dims": 1536,
-            "embed": hf_embed,
-            # "embed" : f"huggingface: {settings.embedding_model}",
+            # "embed": hf_embed,
+            "embed" : f"huggingface: {settings.embedding_model}",
         },
     )
 )
